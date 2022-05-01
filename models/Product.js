@@ -22,17 +22,30 @@ Product.init(
     price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
+      // https://sequelize.org/docs/v6/core-concepts/validations-and-constraints/
+      // Validates that the value is a decimal
+      validate: {
+        isDecimal: true,
+      },
     },
     stock: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      // https://sequelize.org/docs/v6/core-concepts/validations-and-constraints/
+      // Validates that a value is numeric
+      validate: {
+        isNumeric: true,
+      },
+      // https://sequelize.org/docs/v6/core-concepts/model-basics/
+      // Set a default value of 10
+      defaultValue: 10,
     },
     category_id: {
       type: DataTypes.INTEGER,
+      // references the CATEGORY model's ID
       references: {
         model: 'category',
         key: 'id',
-        unique: false,
       },
     },
   },
