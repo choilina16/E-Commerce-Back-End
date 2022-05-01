@@ -1,4 +1,4 @@
-// USING ACTIVITY 28 - MINI PROJECT AS A RESOURCE FOR THIS!! 
+// USING ACTIVITY 28 - MINI PROJECT AS A RESOURCE FOR THIS!!
 
 const router = require('express').Router();
 const { Category, Product } = require('../../models');
@@ -8,9 +8,14 @@ const { Category, Product } = require('../../models');
 // be sure to include its associated Products
 router.get('/', async (req, res) => {
   try {
-    const categoriesData = await Category.findAll();
+    const categoriesData = await Category.findAll({
+      // finding all data on category + the data of product associated with category
+      include: [{ model: Product }],
+    });
+    // 200 - OK
     res.status(200).json(categoriesData);
   } catch (err) {
+    // 500 - INTERNAL SERVER ERROR
     res.status(500).json(err);
   }
 });
@@ -20,10 +25,12 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const categoriesData = await Category.findByPk(req.params.id, {
-      include: [{}],
+      // finding data on category based on the id given + the data of product associated with category
+      include: [{ model: Product }],
     });
 
     if (!categoriesData) {
+      // 400 - BAD REQUEST ERROR
       res.status(400).json({ message: 'ERROR! SOMETHING WRONG...' });
       return;
     }
@@ -45,20 +52,36 @@ router.post('/', async (req, res) => {
 });
 
 // update a category by its `id` value
+// activity 9
 router.put('/:id', async (req, res) => {
   try {
-
-
+    const updatedCategory = await Category.update(
+      {
+        // all the fields the user can update
+        category_name: req.body.category_name,
+      },
+      {
+        // gets an id based in the request
+        where: {
+          id: req.params.id,
+        },
+      }
+    );
+    res.status(200).json(updatedCategory);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
 // delete a category by its `id` value
 router.delete('/:id', async (req, res) => {
   try {
     const categoriesData = await Category.destroy({
       where: {
-        id: req.params.id
-      }
+        id: req.params.id,
+      },
     });
-    
+
     if (!categoriesData) {
       res.status(400).json({ message: 'ERROR! SOMETHING WRONG...' });
       return;
